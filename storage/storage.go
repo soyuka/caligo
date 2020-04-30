@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"time"
 
 	"go.etcd.io/etcd/v3/clientv3"
 )
@@ -10,6 +9,7 @@ import (
 type Config struct {
 	Etcd              clientv3.Config
 	ShortenerHostname string
+	IdLength int
 }
 
 func Read(config clientv3.Config, key string) (string, error) {
@@ -21,7 +21,7 @@ func Read(config clientv3.Config, key string) (string, error) {
 
 	defer cli.Close()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), config.DialTimeout)
 	resp, err := cli.Get(ctx, key)
 	cancel()
 
@@ -45,7 +45,7 @@ func Write(config clientv3.Config, key string, value string) error {
 
 	defer cli.Close()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), config.DialTimeout)
 	_, err = cli.Put(ctx, key, value)
 	cancel()
 

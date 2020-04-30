@@ -4,6 +4,6 @@ import (
 	"github.com/matoous/go-nanoid"
 )
 
-func GetId() (string, error) {
-	return gonanoid.Nanoid(14)
+func GetId(idLength int) (string, error) {
+	return gonanoid.Nanoid(idLength)
 }

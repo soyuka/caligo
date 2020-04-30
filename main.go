@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -30,7 +31,7 @@ func getConfig() storage.Config {
 		dialTimeout = 5 * time.Second
 	}
 
-	shortenerHostname := os.Getenv("SHORTENER_HOSTNAME")
+	shortenerHostname := os.Getenv("CALIGO_HOSTNAME")
 
 	if shortenerHostname == "" {
 		shortenerHostname = "localhost:8080"
@@ -39,8 +40,15 @@ func getConfig() storage.Config {
 	log.Println("ETCD endpoints", endpoints)
 	log.Println("Hostname", shortenerHostname)
 
+	idLength, err := strconv.ParseInt(os.Getenv("CALIGO_ID_LENGTH"), 10, 32)
+
+	if idLength == 0 || err != nil {
+		idLength = 12
+	}
+
 	return storage.Config{
 		ShortenerHostname: shortenerHostname,
+		IdLength: int(idLength),
 		Etcd: clientv3.Config{
 			Endpoints:   endpoints,
 			DialTimeout: dialTimeout,
@@ -63,7 +71,7 @@ func main() {
 	r.HandleFunc("/", handlers.CreateLink(config)).Methods("POST")
 	http.Handle("/", r)
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("CALIGO_PORT")
 	if port == "" {
 		port = "8080"
 	}
