@@ -48,7 +48,7 @@ func getConfig() storage.Config {
 
 	return storage.Config{
 		ShortenerHostname: shortenerHostname,
-		IdLength: int(idLength),
+		IdLength:          int(idLength),
 		Etcd: clientv3.Config{
 			Endpoints:   endpoints,
 			DialTimeout: dialTimeout,

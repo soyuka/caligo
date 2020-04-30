@@ -9,7 +9,7 @@ import (
 type Config struct {
 	Etcd              clientv3.Config
 	ShortenerHostname string
-	IdLength int
+	IdLength          int
 }
 
 func Read(config clientv3.Config, key string) (string, error) {

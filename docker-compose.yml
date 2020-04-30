@@ -1,0 +1,24 @@
+version: '3' 
+
+services:
+  etcd:
+    image: bitnami/etcd:latest
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    networks:
+      - caligo-network
+
+  caligo:
+    build: .
+    networks:
+      - caligo-network
+    ports:
+        - 8080:8080
+    environment:
+      - ETCD_URL=http://etcd:2379
+      - CALIGO_HOSTNAME=http://caligo.space
+
+networks:
+  caligo-network:
+    driver: bridge
