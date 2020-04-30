@@ -73,17 +73,17 @@ func main() {
 
 		key := strings.Replace(r.URL.Path, "/", "", 1)
 
-		_, err := r.Cookie(cookieName)
-
-		if err == nil {
-			cookie := &http.Cookie{Name: cookieName, MaxAge: -1}
-			http.SetCookie(w, cookie)
-			w.WriteHeader(http.StatusCreated)
-			w.Write([]byte(http.StatusText(http.StatusCreated)))
-			return
-		}
-
 		if key != "" {
+			_, err := r.Cookie(cookieName)
+
+			if err == nil {
+				cookie := &http.Cookie{Name: cookieName, MaxAge: -1}
+				http.SetCookie(w, cookie)
+				w.WriteHeader(http.StatusCreated)
+				w.Write([]byte(http.StatusText(http.StatusCreated)))
+				return
+			}
+
 			redirectHandler(w, r, key)
 			return
 		}
