@@ -1,6 +1,6 @@
 # Caligo 🧿
 
-![](./favicon.png) [Caligo meaning](https://fr.wiktionary.org/wiki/caligo#la).
+🧿 [Caligo meaning](https://fr.wiktionary.org/wiki/caligo#la).
 
 ## Stack
 
@@ -12,7 +12,7 @@ Go HTTP and etcd should scale well if you have money.
 
 ## How
 
-POST / with url to obfuscate
+- /?google.com
 
 ## Configuration
 
@@ -20,4 +20,5 @@ POST / with url to obfuscate
 - `ETCD_DIAL_TIMEOUT` (default=5s) dial timeout for etcd
 - `CALIGO_HOSTNAME` (default=localhost:8080) hostname
 - `CALIGO_ID_LENGTH` (default=12) nanoid length (see [collision calculator](https://zelark.github.io/nano-id-cc/))
-- `CALIGO_PORT` (default=8080)
+- `CALIGO_ID_ALPHABET` (default=0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ) nanoid alphabet)
+- `CALIGO_PORT` (default=5376)

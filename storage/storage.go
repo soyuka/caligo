@@ -6,12 +6,6 @@ import (
 	"go.etcd.io/etcd/v3/clientv3"
 )
 
-type Config struct {
-	Etcd              clientv3.Config
-	ShortenerHostname string
-	IdLength          int
-}
-
 func Read(config clientv3.Config, key string) (string, error) {
 	cli, err := clientv3.New(config)
 

@@ -8,14 +8,15 @@ import (
 	"net/url"
 	"unicode/utf8"
 
+	"github.com/soyuka/caligo/config"
 	"github.com/soyuka/caligo/id_generator"
 	"github.com/soyuka/caligo/storage"
 )
 
 // GET ?http://link
-func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request, string) {
+func CreateLink(config config.Config) func(http.ResponseWriter, *http.Request, string) {
 	return func(w http.ResponseWriter, r *http.Request, inputUrl string) {
-		id, err := id_generator.GetId(config.IdLength)
+		id, err := id_generator.GetId(config.IdAlphabet, config.IdLength)
 
 		if err != nil {
 			log.Print(err)
@@ -56,7 +57,7 @@ func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request, 
 }
 
 /// Redirects short link to url
-func Redirect(config storage.Config) func(http.ResponseWriter, *http.Request, string) {
+func Redirect(config config.Config) func(http.ResponseWriter, *http.Request, string) {
 	return func(w http.ResponseWriter, r *http.Request, key string) {
 		url, err := storage.Read(config.Etcd, key)
 
