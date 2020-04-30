@@ -51,8 +51,7 @@ func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request, 
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, "%s/%s", config.ShortenerHostname, id)
+		http.Redirect(w, r, fmt.Sprintf("%s/%s", config.ShortenerHostname, id), 302)
 	}
 }
 

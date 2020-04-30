@@ -32,7 +32,7 @@ func getConfig() storage.Config {
 	shortenerHostname := os.Getenv("CALIGO_HOSTNAME")
 
 	if shortenerHostname == "" {
-		shortenerHostname = "localhost:8080"
+		shortenerHostname = "http://localhost:8080"
 	}
 
 	log.Println("ETCD endpoints", endpoints)
@@ -58,17 +58,30 @@ func main() {
 	config := getConfig()
 	createLinkHandler := handlers.CreateLink(config)
 	redirectHandler := handlers.Redirect(config)
+	cookieName := "created"
 
 	http.HandleFunc("/favicon.ico", handlers.Favicon)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		url := strings.Replace(r.URL.RawQuery, "?", "", 1)
 
 		if url != "" {
+			cookie := &http.Cookie{Name: cookieName}
+			http.SetCookie(w, cookie)
 			createLinkHandler(w, r, url)
 			return
 		}
 
 		key := strings.Replace(r.URL.Path, "/", "", 1)
+
+		_, err := r.Cookie(cookieName)
+
+		if err == nil {
+			cookie := &http.Cookie{Name: cookieName, MaxAge: -1}
+			http.SetCookie(w, cookie)
+			w.WriteHeader(http.StatusCreated)
+			w.Write([]byte(http.StatusText(http.StatusCreated)))
+			return
+		}
 
 		if key != "" {
 			redirectHandler(w, r, key)
