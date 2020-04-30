@@ -24,8 +24,6 @@ func getConfig() storage.Config {
 		endpoints = strings.Split(etcdUrl, ",")
 	}
 
-	log.Println(endpoints)
-
 	dialTimeout, _ := time.ParseDuration(os.Getenv("ETCD_DIAL_TIMEOUT"))
 
 	if dialTimeout == 0 {
@@ -37,6 +35,9 @@ func getConfig() storage.Config {
 	if shortenerHostname == "" {
 		shortenerHostname = "localhost:8080"
 	}
+
+	log.Println("ETCD endpoints", endpoints)
+	log.Println("Hostname", shortenerHostname)
 
 	return storage.Config{
 		ShortenerHostname: shortenerHostname,
@@ -67,5 +68,6 @@ func main() {
 		port = "8080"
 	}
 
+	log.Println("Listen", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
