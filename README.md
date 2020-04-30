@@ -1,4 +1,4 @@
-# Caligo
+# Caligo 🧿
 
 ![](./favicon.png) [Caligo meaning](https://fr.wiktionary.org/wiki/caligo#la).
 

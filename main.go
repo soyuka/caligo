@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -9,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	"go.etcd.io/etcd/v3/clientv3"
 
 	"github.com/soyuka/caligo/handlers"
@@ -58,18 +56,28 @@ func getConfig() storage.Config {
 
 func main() {
 	config := getConfig()
-	index, err := ioutil.ReadFile("./index.html")
+	createLinkHandler := handlers.CreateLink(config)
+	redirectHandler := handlers.Redirect(config)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	http.HandleFunc("/favicon.ico", handlers.Favicon)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		url := strings.Replace(r.URL.RawQuery, "?", "", 1)
 
-	r := mux.NewRouter()
-	r.HandleFunc("/", handlers.HtmlFile(index)).Methods("GET")
-	r.HandleFunc("/favicon.ico", handlers.Favicon)
-	r.HandleFunc("/{key}", handlers.Redirect(config)).Methods("GET")
-	r.HandleFunc("/", handlers.CreateLink(config)).Methods("POST")
-	http.Handle("/", r)
+		if url != "" {
+			createLinkHandler(w, r, url)
+			return
+		}
+
+		key := strings.Replace(r.URL.Path, "/", "", 1)
+
+		if key != "" {
+			redirectHandler(w, r, key)
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(http.StatusText(http.StatusNotFound)))
+	})
 
 	port := os.Getenv("CALIGO_PORT")
 	if port == "" {

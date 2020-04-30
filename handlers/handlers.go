@@ -8,14 +8,13 @@ import (
 	"net/url"
 	"unicode/utf8"
 
-	"github.com/gorilla/mux"
 	"github.com/soyuka/caligo/id_generator"
 	"github.com/soyuka/caligo/storage"
 )
 
-/// Creates a link on form POST / with url field
-func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+// GET ?http://link
+func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request, string) {
+	return func(w http.ResponseWriter, r *http.Request, inputUrl string) {
 		id, err := id_generator.GetId(config.IdLength)
 
 		if err != nil {
@@ -25,21 +24,13 @@ func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 
-		formUrl := r.PostFormValue("url")
-
-		if formUrl == "" {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(http.StatusText(http.StatusBadRequest)))
-			return
-		}
-
-		if utf8.RuneCountInString(formUrl) > 2000 {
+		if utf8.RuneCountInString(inputUrl) > 2000 {
 			w.WriteHeader(http.StatusRequestURITooLong)
 			w.Write([]byte(http.StatusText(http.StatusRequestURITooLong)))
 			return
 		}
 
-		parsedUrl, err := url.Parse(formUrl)
+		parsedUrl, err := url.Parse(inputUrl)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -66,10 +57,9 @@ func CreateLink(config storage.Config) func(http.ResponseWriter, *http.Request) 
 }
 
 /// Redirects short link to url
-func Redirect(config storage.Config) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		url, err := storage.Read(config.Etcd, vars["key"])
+func Redirect(config storage.Config) func(http.ResponseWriter, *http.Request, string) {
+	return func(w http.ResponseWriter, r *http.Request, key string) {
+		url, err := storage.Read(config.Etcd, key)
 
 		if url == "" {
 			w.WriteHeader(http.StatusNotFound)
@@ -93,11 +83,4 @@ func Favicon(w http.ResponseWriter, r *http.Request) {
 	decoded, _ := base64.StdEncoding.DecodeString("AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAQbvwAApLaQACnuAADuTwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIgAAIiAAACETIAIxEgAAI0QgAkQyAAACJDIjQiAAACNEMiNEMgACMUQyI0QTIAIxRDIjRBMgAjFEIiJEEyACMTICICMTIAAiICACAiIAAAAAIAIAAAAAAAIAACAAAAACIAAAAiAAAAAAAAAAAAD//wAA//8AAOPHAADBgwAAwYMAAOAHAADAAwAAgAEAAIABAACAAQAAgkEAAMWjAAD9vwAA+98AAOfnAAD//wAA")
 	w.Header().Set("Content-Type", "image/x-icon")
 	w.Write(decoded)
-}
-
-/// Serve a html file
-func HtmlFile(index []byte) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write(index)
-	}
 }
