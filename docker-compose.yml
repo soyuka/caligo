@@ -17,6 +17,7 @@ services:
         - 5376:5376
     environment:
       - ETCD_URL=http://etcd:2379
+    env_file: .env
 
 networks:
   caligo-network:

@@ -36,7 +36,7 @@ func GetConfig() Config {
 	shortenerHostname := os.Getenv("CALIGO_HOSTNAME")
 
 	if shortenerHostname == "" {
-		shortenerHostname = "http://localhost:8080"
+		shortenerHostname = "http://localhost:5376"
 	}
 
 	port := os.Getenv("CALIGO_PORT")
