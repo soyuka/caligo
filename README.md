@@ -5,8 +5,8 @@
 ## Stack
 
 - Go http api
-- [etcd](etcd.io) database
-- [nanoid](github.com/matoous/go-nanoid) for id generation
+- [etcd](https://etcd.io/) database
+- [nanoid](https://github.com/matoous/go-nanoid) for id generation
 
 Go HTTP and etcd should scale well if you have money.
 
