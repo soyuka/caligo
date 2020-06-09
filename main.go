@@ -4,50 +4,36 @@ import (
 	"log"
 	"net/http"
 
-	"strings"
-
-	"github.com/soyuka/caligo/config"
+	c "github.com/soyuka/caligo/config"
 	"github.com/soyuka/caligo/handlers"
+
+	bolt "go.etcd.io/bbolt"
 )
 
 func main() {
-	config := config.GetConfig()
-	createLinkHandler := handlers.CreateLink(config)
-	redirectHandler := handlers.Redirect(config)
-	cookieName := "created"
+	config := c.GetConfig()
 
-	http.HandleFunc("/favicon.ico", handlers.Favicon)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		url := strings.Replace(r.URL.RawQuery, "?", "", 1)
+	db, err := bolt.Open(config.DBPath, 0666, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		if url != "" {
-			cookie := &http.Cookie{Name: cookieName}
-			http.SetCookie(w, cookie)
-			createLinkHandler(w, r, url)
-			return
-		}
+	env := &handlers.Env{
+		DB:     db,
+		Config: config,
+	}
 
-		key := strings.Replace(r.URL.Path, "/", "", 1)
-
-		if key != "" {
-			_, err := r.Cookie(cookieName)
-
-			if err == nil {
-				cookie := &http.Cookie{Name: cookieName, MaxAge: -1}
-				http.SetCookie(w, cookie)
-				w.WriteHeader(http.StatusCreated)
-				w.Write([]byte(http.StatusText(http.StatusCreated)))
-				return
-			}
-
-			redirectHandler(w, r, key)
-			return
-		}
-
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(http.StatusText(http.StatusNotFound)))
+	err = db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucketIfNotExists([]byte(config.DBBucketName))
+		return nil
 	})
 
-	log.Println("Listen", config.Port)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.Handle("/favicon.ico", handlers.Handler{env, handlers.Favicon})
+	http.Handle("/", handlers.Handler{env, handlers.GetIndex})
+
 	log.Fatal(http.ListenAndServe(":"+config.Port, nil))
 }
