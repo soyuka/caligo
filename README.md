@@ -8,7 +8,7 @@
 - [boltdb](https://github.com/etcd-io/bbolt) database
 - [nanoid](https://github.com/matoous/go-nanoid) for id generation
 
-Go HTTP and etcd should scale well if you have money.
+Go HTTP and boltdb should scale well if you have money.
 
 ## How
 
@@ -17,7 +17,7 @@ Go HTTP and etcd should scale well if you have money.
 ## Configuration
 
 - `CALIGO_DB_PATH` (default=data.bolt) db path
-- `CALIGO_HOSTNAME` (default=localhost:8080) hostname
+- `CALIGO_HOSTNAME` (default=localhost:5376) hostname
 - `CALIGO_ID_LENGTH` (default=12) nanoid length (see [collision calculator](https://zelark.github.io/nano-id-cc/))
 - `CALIGO_ID_ALPHABET` (default=0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ) nanoid alphabet)
 - `CALIGO_PORT` (default=5376)
