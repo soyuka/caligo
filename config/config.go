@@ -7,8 +7,7 @@ import (
 )
 
 type Config struct {
-	DBPath            string
-	DBBucketName      string
+	DB string
 	ShortenerHostname string
 	IdAlphabet        string
 	IdLength          int
@@ -16,10 +15,10 @@ type Config struct {
 }
 
 func GetConfig() Config {
-	dbPath := os.Getenv("CALIGO_DB_PATH")
+	dbPath := os.Getenv("CALIGO_DB")
 
 	if dbPath == "" {
-		dbPath = "data.bolt"
+		dbPath = "bolt://data.bolt"
 	}
 
 	shortenerHostname := os.Getenv("CALIGO_HOSTNAME")
@@ -54,7 +53,6 @@ func GetConfig() Config {
 		IdLength:          int(idLength),
 		IdAlphabet:        idAlphabet,
 		Port:              port,
-		DBPath:            dbPath,
-		DBBucketName:      "caligo",
+		DB:            dbPath,
 	}
 }

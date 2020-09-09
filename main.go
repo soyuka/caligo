@@ -6,34 +6,24 @@ import (
 
 	c "github.com/soyuka/caligo/config"
 	"github.com/soyuka/caligo/handlers"
-
-	bolt "go.etcd.io/bbolt"
+	t "github.com/soyuka/caligo/transports"
 )
 
 func main() {
 	config := c.GetConfig()
 
-	db, err := bolt.Open(config.DBPath, 0666, nil)
+	transport, err := t.NewTransport(&config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	env := &handlers.Env{
-		DB:     db,
-		Config: config,
+		Transport: transport,
+		Config:    config,
 	}
 
-	err = db.Update(func(tx *bolt.Tx) error {
-		tx.CreateBucketIfNotExists([]byte(config.DBBucketName))
-		return nil
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	http.Handle("/favicon.ico", handlers.Handler{env, handlers.Favicon})
-	http.Handle("/", handlers.Handler{env, handlers.GetIndex})
+	http.Handle("/favicon.ico", handlers.Handler{Env: env, Handler: handlers.Favicon})
+	http.Handle("/", handlers.Handler{Env: env, Handler: handlers.GetIndex})
 
 	log.Fatal(http.ListenAndServe(":"+config.Port, nil))
 }

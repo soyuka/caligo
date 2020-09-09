@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	t "github.com/soyuka/caligo/transports"
 	c "github.com/soyuka/caligo/config"
-	bolt "go.etcd.io/bbolt"
 )
 
+
 type Env struct {
-	DB     *bolt.DB
+	Transport t.Transport
 	Config c.Config
 }

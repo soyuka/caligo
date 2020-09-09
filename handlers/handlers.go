@@ -11,10 +11,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/matoous/go-nanoid"
-	bolt "go.etcd.io/bbolt"
 )
 
-const cookieName = "created"
+const cookieName = "caligo"
 
 type Error interface {
 	error
@@ -42,13 +41,13 @@ func (se StatusError) Status() int {
 }
 
 type Handler struct {
-	*Env
-	H func(e *Env, w http.ResponseWriter, r *http.Request) error
+	Env *Env
+	Handler func(e *Env, w http.ResponseWriter, r *http.Request) error
 }
 
 // Adapted from https://blog.questionable.services/article/http-handler-error-handling-revisited/
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	err := h.H(h.Env, w, r)
+	err := h.Handler(h.Env, w, r)
 	if err != nil {
 		switch e := err.(type) {
 		case Error:
@@ -118,11 +117,7 @@ func CreateLink(env *Env, w http.ResponseWriter, r *http.Request, inputUrl strin
 		return StatusError{http.StatusInternalServerError, err}
 	}
 
-	err = env.DB.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(env.Config.DBBucketName))
-		err := b.Put([]byte(id), []byte(parsedUrl.String()))
-		return err
-	})
+	err = env.Transport.Put(id, parsedUrl.String())
 
 	if err != nil {
 		return StatusError{http.StatusInternalServerError, err}
@@ -134,13 +129,7 @@ func CreateLink(env *Env, w http.ResponseWriter, r *http.Request, inputUrl strin
 
 /// Redirects short link to url
 func Redirect(env *Env, w http.ResponseWriter, r *http.Request, key string) error {
-	var url string
-
-	err := env.DB.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(env.Config.DBBucketName))
-		url = string(b.Get([]byte(key)))
-		return nil
-	})
+	url, err := env.Transport.Get(key)
 
 	if err != nil {
 		return StatusError{http.StatusInternalServerError, err}
