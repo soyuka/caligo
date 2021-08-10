@@ -37,3 +37,8 @@ Get redis password and create a config map.
 kubectl get secret --namespace default caligo-redis -o jsonpath="{.data.redis-password}" | base64 --decode
 kubectl create configmap caligo-config --from-literal caligo-db=redis://:Y3Jv8HO2Yc@localhost:6379/1 
 ```
+
+## TODO
+
+- allow custom url
+- statistics click
