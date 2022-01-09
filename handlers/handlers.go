@@ -183,7 +183,7 @@ func Index(env *Env, w http.ResponseWriter, r *http.Request) error {
   <p>Open <code>`+env.Config.ShortenerHostname+`?URL</code> in your browser. Copy the redirected URL from the address bar (CTRL+L, CTRL+C).</p>
   <p><a href="https://github.com/soyuka/caligo">Code on github</a></p>
   <h2>Statistics</h2>
-  <p>`+strconv.FormatInt(count, 2)+` links obfuscated</p>
+  <p>`+strconv.FormatInt(count, 10)+` links obfuscated</p>
 </body>
 </html>`
 	w.Write([]byte(index))

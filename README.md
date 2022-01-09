@@ -16,7 +16,7 @@ Go HTTP and boltdb should scale well if you have money.
 
 ## Configuration
 
-- `CALIGO_DB` (default=data.bolt) db path
+- `CALIGO_DB` (default=bolt://data.bolt) db path
 - `CALIGO_HOSTNAME` (default=localhost:5376) hostname
 - `CALIGO_ID_LENGTH` (default=12) nanoid length (see [collision calculator](https://zelark.github.io/nano-id-cc/))
 - `CALIGO_ID_ALPHABET` (default=0123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ) nanoid alphabet)
