@@ -71,3 +71,14 @@ func (b *BoltTransport) Get(id string) (string, error) {
 
 	return url, err
 }
+
+func (b *BoltTransport) Count() (int64, error) {
+	var count int64
+	err := b.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(b.bucketName))
+		count = int64(b.Stats().KeyN)
+		return nil
+	})
+
+	return count, err
+}

@@ -17,6 +17,7 @@ var (
 type Transport interface {
 	Put(id string, url string) error
 	Get(id string) (string, error)
+	Count() (int64, error)
 }
 
 // NewTransport create a transport using the backend matching the given TransportURL.

@@ -33,3 +33,7 @@ func (r *RedisTransport) Put(id string, url string) error {
 func (r *RedisTransport) Get(id string) (string, error) {
     return r.db.Get(ctx, "key").Result()
 }
+
+func (r *RedisTransport) Count() (int64, error) {
+    return r.db.DBSize(ctx).Result()
+}

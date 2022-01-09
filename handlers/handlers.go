@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+    "strconv"
 	"log"
 	"net/http"
 	"net/url"
@@ -158,6 +159,8 @@ func Favicon(env *Env, w http.ResponseWriter, r *http.Request) error {
 
 /// Favicon just for fun
 func Index(env *Env, w http.ResponseWriter, r *http.Request) error {
+	count, _ := env.Transport.Count()
+
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Cache-Control", "public, max-age=86400")
 	index := `<!DOCTYPE html>
@@ -174,11 +177,13 @@ func Index(env *Env, w http.ResponseWriter, r *http.Request) error {
   <form method="GET" action="/">
 	<input type="text" name="u" />
 	<input type="submit" value="Obfuscate"/>
-	<p><small>Data has no warranty and can be removed at any time</small></p>
+	<p><small>Data has no warranty and can be removed at any time.</small></p>
   </form>
   <h2>API</h2>
   <p>Open <code>`+env.Config.ShortenerHostname+`?URL</code> in your browser. Copy the redirected URL from the address bar (CTRL+L, CTRL+C).</p>
   <p><a href="https://github.com/soyuka/caligo">Code on github</a></p>
+  <h2>Statistics</h2>
+  <p>`+strconv.FormatInt(count, 2)+` links obfuscated</p>
 </body>
 </html>`
 	w.Write([]byte(index))
