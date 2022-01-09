@@ -170,6 +170,12 @@ func Index(env *Env, w http.ResponseWriter, r *http.Request) error {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="URL obfuscator" />
+  <style>
+	body {margin: 5% auto; background: #f2f2f2; color: #444444; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.8; text-shadow: 0 1px 0 #ffffff; max-width: 73%;}
+	code {background: white;}
+	a {border-bottom: 1px solid #444444; color: #444444; text-decoration: none;}
+	a:hover {border-bottom: 0;}
+  </style>
 </head>
 <body>
   <h1>Caligo</h1>
