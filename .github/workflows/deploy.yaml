@@ -1,0 +1,19 @@
+on:
+  push:
+    tags:        
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+            strip_v: true
+      - name: Build
+        run: docker build -t soyuka/caligo#${{steps.tag.outputs.tag}}
+
