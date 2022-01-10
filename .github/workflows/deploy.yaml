@@ -1,0 +1,28 @@
+on:
+  push:
+    tags:        
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+            strip_v: true
+      - name: Build
+        run: |
+          docker build -t soyuka/caligo:latest -t soyuka/caligo:${{steps.tag.outputs.tag}} .
+          docker push -a soyuka/caligo
+
+
